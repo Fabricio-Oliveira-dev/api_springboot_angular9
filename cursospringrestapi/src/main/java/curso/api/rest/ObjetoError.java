@@ -1,14 +1,15 @@
 package curso.api.rest;
 
-public class ObjetoErro {
+public class ObjetoError {
 	
-	private String erro;
+	private String error;
 	private String code;
-	public String getErro() {
-		return erro;
+	
+	public String getError() {
+		return error;
 	}
-	public void setErro(String erro) {
-		this.erro = erro;
+	public void setError(String erro) {
+		this.error = erro;
 	}
 	public String getCode() {
 		return code;

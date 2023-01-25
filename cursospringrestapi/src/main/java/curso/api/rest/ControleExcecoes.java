@@ -3,8 +3,7 @@ package curso.api.rest;
 import java.sql.SQLException;
 import java.util.List;
 
-import javax.validation.ConstraintViolationException;
-
+import org.hibernate.exception.ConstraintViolationException;
 import org.postgresql.util.PSQLException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
@@ -41,8 +40,8 @@ public class ControleExcecoes extends ResponseEntityExceptionHandler{
 			msg = ex.getMessage();
 		}
 		
-		ObjetoErro objetoErro = new ObjetoErro();
-		objetoErro.setErro(msg);
+		ObjetoError objetoErro = new ObjetoError();
+		objetoErro.setError(msg);
 		objetoErro.setCode(status.value() + " ==> " + status.getReasonPhrase());
 		
 		
@@ -72,8 +71,8 @@ public class ControleExcecoes extends ResponseEntityExceptionHandler{
 			msg = ex.getMessage(); /*outras mensagens genéricas*/
 		}
 		
-		ObjetoErro objectError = new ObjetoErro();
-		objectError.setErro(msg);
+		ObjetoError objectError = new ObjetoError();
+		objectError.setError(msg);
 		objectError.setCode(HttpStatus.INTERNAL_SERVER_ERROR + " ==> " + HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
 		
 		return new ResponseEntity<>(objectError, HttpStatus.INTERNAL_SERVER_ERROR);

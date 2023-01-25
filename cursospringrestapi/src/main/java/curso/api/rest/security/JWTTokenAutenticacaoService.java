@@ -48,6 +48,11 @@ public class JWTTokenAutenticacaoService {
 		/*Adiciona no cabeçalho http*/
 		response.addHeader(HEADER_STRING, token);
 		
+		if (response.getHeader("Access-Control-Allow-Origin") == null) {
+		/*Liberando resposta para porta diferente do projeto Angular*/
+		response.addHeader("Access-Control-Allow-Origin", "*");
+		}
+		
 		ApplicationContextLoad.getApplicationContext().getBean(UsuarioRepository.class)
 				.atualizaTokenUser(JWT, username);
 		
@@ -87,7 +92,7 @@ public class JWTTokenAutenticacaoService {
 					}
 				}
 			}
-
+			
 		} /*fim da condição token*/
 		}catch(io.jsonwebtoken.ExpiredJwtException e) {
 			try {
@@ -98,7 +103,7 @@ public class JWTTokenAutenticacaoService {
 		liberacaoCors(response);
 		return null;
 	}
-
+	
 	private void liberacaoCors(HttpServletResponse response) {
 
 		if (response.getHeader("Access-Control-Allow-Origin") == null) {

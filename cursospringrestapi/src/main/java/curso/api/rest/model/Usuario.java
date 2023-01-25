@@ -1,7 +1,9 @@
 package curso.api.rest.model;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -13,15 +15,20 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinColumns;
 import javax.persistence.JoinTable;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.UniqueConstraint;
 
-import org.hibernate.annotations.ForeignKey;
+import org.hibernate.validator.constraints.br.CPF;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.format.annotation.DateTimeFormat.ISO;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
@@ -40,6 +47,8 @@ public class Usuario implements UserDetails {
 	
 	private String nome;
 	
+	@CPF(message = "Cpf inválido")
+	private String cpf;
 
 	@OneToMany(mappedBy="usuario", orphanRemoval = true, cascade = CascadeType.ALL, fetch =FetchType.LAZY)
 	private List<Telefone> telefones = new ArrayList<Telefone>();
@@ -52,7 +61,41 @@ public class Usuario implements UserDetails {
 					inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id", table = "role", unique = false, updatable = false),
 					foreignKey = @javax.persistence.ForeignKey(name = "role_fk", value = ConstraintMode.CONSTRAINT)
 					)
-	private List<Role> roles; 
+	private List<Role> roles = new ArrayList<Role>();
+	
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	@Temporal(TemporalType.DATE)
+	@DateTimeFormat(iso = ISO.DATE, pattern = "dd/MM/yyyy")
+	private Date dataNascimento;
+	
+	@ManyToOne
+	private Profissao profissao;
+	
+	private BigDecimal salario;
+
+	public void setSalario(BigDecimal salario) {
+		this.salario = salario;
+	}
+	
+	public BigDecimal getSalario() {
+		return salario;
+	}
+	
+	public Profissao getProfissao() {
+		return profissao;
+	}
+
+	public void setProfissao(Profissao profissao) {
+		this.profissao = profissao;
+	}
+
+	public void setDataNascimento(Date dataNascimento) {
+		this.dataNascimento = dataNascimento;
+	}
+	
+	public Date getDataNascimento() {
+		return dataNascimento;
+	}
 	
 	private String token;
 	
@@ -62,6 +105,14 @@ public class Usuario implements UserDetails {
 	private String bairro;
 	private String localidade;
 	private String uf;
+	
+	public void setCpf(String cpf) {
+		this.cpf = cpf;
+	}
+	
+	public String getCpf() {
+		return cpf;
+	}
 	
 	public String getCep() {
 		return cep;
@@ -187,7 +238,7 @@ public class Usuario implements UserDetails {
 
 	/*São os acessos do usuário ROLE_ADMIN OU ROLE_VISITANTE*/
 	@Override
-	public Collection<? extends GrantedAuthority> getAuthorities() {
+	public Collection<Role> getAuthorities() {
 		return roles;
 	}
 	
