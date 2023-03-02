@@ -9,6 +9,7 @@ import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
@@ -77,17 +78,17 @@ public class IndexController {
 	
 
 	/* Serviço RESTful */
-	@GetMapping(value = "/{id}", produces = "application/json", headers = "X-API-Version=v1")
+	/**@GetMapping(value = "/{id}", produces = "application/json", headers = "X-API-Version=v1")
 	@CachePut("cacheuser")
 	public ResponseEntity<UsuarioDTO> initV1(@PathVariable (value = "id") Long id) {
 		
 		Optional<Usuario> usuario = usuarioRepository.findById(id);
 		System.out.println("Essa é a primeira versão");
 		return new ResponseEntity<UsuarioDTO>(new UsuarioDTO(usuario.get()), HttpStatus.OK);
-	}
+	}**/
 	
 	/* Serviço RESTful */
-	@GetMapping(value = "/{id}", produces = "application/json", headers = "X-API-Version=v2")
+	@GetMapping(value = "/{id}", produces = "application/json")
 	@CachePut("cacheuser")
 	public ResponseEntity<Usuario> initV2(@PathVariable (value = "id") Long id) {
 		
@@ -198,29 +199,31 @@ public class IndexController {
 		}
 		
 		/*Consumindo uma API publica externa*/
-		URL url = new URL("https://viacep.com.br/ws/"+usuario.getCep()+"/json/");
-		URLConnection connection = url.openConnection();
-		InputStream is = connection.getInputStream();
-		BufferedReader br = new BufferedReader(new InputStreamReader(is, "UTF-8"));
-		
-		String cep = "";
-		StringBuilder jsonCep = new StringBuilder();
-		
-		while ((cep = br.readLine()) != null) {
-			jsonCep.append(cep);
+		if (Objects.nonNull(usuario.getCep())) {
+			URL url = new URL("https://viacep.com.br/ws/"+usuario.getCep()+"/json/");
+			URLConnection connection = url.openConnection();
+			InputStream is = connection.getInputStream();
+			BufferedReader br = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+			
+			String cep = "";
+			StringBuilder jsonCep = new StringBuilder();
+			
+			while ((cep = br.readLine()) != null) {
+				jsonCep.append(cep);
+			}
+			
+			System.out.println(jsonCep.toString());
+			
+			Usuario userAux = new Gson().fromJson(jsonCep.toString(), Usuario.class);
+			
+			usuario.setSenha(userAux.getCep());
+			usuario.setLogradouro(userAux.getLogradouro());
+			usuario.setComplemento(userAux.getComplemento());
+			usuario.setBairro(userAux.getBairro());
+			usuario.setLocalidade(userAux.getLocalidade());
+			usuario.setUf(userAux.getUf());
+			/*Consumindo uma API publica externa*/ 
 		}
-		
-		System.out.println(jsonCep.toString());
-		
-		Usuario userAux = new Gson().fromJson(jsonCep.toString(), Usuario.class);
-		
-		usuario.setSenha(userAux.getCep());
-		usuario.setLogradouro(userAux.getLogradouro());
-		usuario.setComplemento(userAux.getComplemento());
-		usuario.setBairro(userAux.getBairro());
-		usuario.setLocalidade(userAux.getLocalidade());
-		usuario.setUf(userAux.getUf());
-		/*Consumindo uma API publica externa*/
 		
 		String senhacriptografa = new BCryptPasswordEncoder().encode(usuario.getSenha());
 		usuario.setSenha(senhacriptografa);
