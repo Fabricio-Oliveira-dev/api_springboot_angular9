@@ -24,19 +24,20 @@ public class ServiceRelatorio implements Serializable{
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 	
+	/*END-POINT que gera o relatório*/
 	public byte[] gerarRelatorio (String nomeRelatorio, Map<String, Object> params, ServletContext servletContext) throws Exception {
 		
-		/*obter conexão com o banco de dados*/
+		/*obtem conexão com o banco de dados*/
 		Connection connection = jdbcTemplate.getDataSource().getConnection();
 		
-		/*Carregar o caminho do arquivo*/
+		/*Carrega o caminho do arquivo*/
 		String caminhoJasper = servletContext.getRealPath("relatorios")
 				+ File.separator + nomeRelatorio + ".jasper";
 		
-		/*Gerar o relatorio com os dados e conexão*/
+		/*Gera o relatório com os dados e conexão*/
 		JasperPrint print = JasperFillManager.fillReport(caminhoJasper, params, connection);
 		
-		/*Exporta para byte o PDF para fazer o download*/
+		/*Exporta em byte o PDF para fazer o download*/
 		byte[] retorno = JasperExportManager.exportReportToPdf(print);
 		connection.close();
 		

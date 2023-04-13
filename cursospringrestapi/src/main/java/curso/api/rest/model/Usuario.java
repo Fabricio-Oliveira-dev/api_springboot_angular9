@@ -100,10 +100,15 @@ public class Usuario implements UserDetails {
 	private String token;
 	
 	private String cep;
+	
 	private String logradouro;
+	
 	private String complemento;
+	
 	private String bairro;
+	
 	private String localidade;
+	
 	private String uf;
 	
 	public void setCpf(String cpf) {
@@ -178,7 +183,6 @@ public class Usuario implements UserDetails {
 		this.telefones = telefones;
 	}
 	
-
 	public Long getId() {
 		return id;
 	}
@@ -236,7 +240,6 @@ public class Usuario implements UserDetails {
 		return true;
 	}
 
-	/*São os acessos do usuário ROLE_ADMIN OU ROLE_VISITANTE*/
 	@Override
 	public Collection<Role> getAuthorities() {
 		return roles;
@@ -274,5 +277,4 @@ public class Usuario implements UserDetails {
 	public boolean isEnabled() {
 		return true;
 	}
-
 }

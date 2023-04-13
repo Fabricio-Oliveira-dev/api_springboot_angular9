@@ -7,7 +7,9 @@ public class UsuarioDTO implements Serializable{
 	private static final long serialVersionUID = 1L;
 	
 	private String userLogin;
+	
 	private String userNome;
+	
 	private String userCpf;
 	
 	public UsuarioDTO(Usuario usuario) {
@@ -34,5 +36,4 @@ public class UsuarioDTO implements Serializable{
 	public void setUserCpf(String userCpf) {
 		this.userCpf = userCpf;
 	}
-	
 }

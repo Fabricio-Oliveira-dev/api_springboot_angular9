@@ -21,7 +21,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @ControllerAdvice
 public class ControleExcecoes extends ResponseEntityExceptionHandler{
 	
-	/*Interceptar erro mais comuns do projeto*/
+	/*Intercepta os erros mais comuns do projeto*/
 	@ExceptionHandler({Exception.class, RuntimeException.class, Throwable.class})
 	@Override
 	protected ResponseEntity<Object> handleExceptionInternal(Exception ex, Object body, HttpHeaders headers,
@@ -30,13 +30,13 @@ public class ControleExcecoes extends ResponseEntityExceptionHandler{
 		String msg = "";
 		
 		if (ex instanceof MethodArgumentNotValidException) {
-			
 			List<ObjectError> list = ((MethodArgumentNotValidException) ex).getBindingResult().getAllErrors();
 			
 			for (ObjectError objectError : list) {
 				msg += objectError.getDefaultMessage() + "\n";
 			}
-		}else {
+			
+		} else {
 			msg = ex.getMessage();
 		}
 		
@@ -44,11 +44,10 @@ public class ControleExcecoes extends ResponseEntityExceptionHandler{
 		objetoErro.setError(msg);
 		objetoErro.setCode(status.value() + " ==> " + status.getReasonPhrase());
 		
-		
 		return new ResponseEntity<>(objetoErro, headers, status);
 	}
 	
-	/*Tratamento da maioria dos erros a nivel de banco de dados*/
+	/*Tratamento dos erros mais comuns a nível de banco de dados*/
 	@ExceptionHandler({DataIntegrityViolationException.class, ConstraintViolationException.class, 
 									PSQLException.class, SQLException.class})
 	protected ResponseEntity<Object> handleExceptionDataIntegry(Exception ex) {
@@ -77,5 +76,4 @@ public class ControleExcecoes extends ResponseEntityExceptionHandler{
 		
 		return new ResponseEntity<>(objectError, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
-	
 }

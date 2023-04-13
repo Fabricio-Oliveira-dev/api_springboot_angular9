@@ -19,13 +19,12 @@ public class ProfissaoController {
 	@Autowired
 	private ProfissaoRepository profissaoRepository;
 	
+	/*Lista as profissões que podem ser associadas ao usuário*/
 	@GetMapping(value = "/", produces="application/json")
 	public ResponseEntity<List<Profissao>> profissoes() {
 		
 		List<Profissao> lista = profissaoRepository.findAll();
 		
 		return new ResponseEntity<List<Profissao>>(lista, HttpStatus.OK);
-		
 	}
-
 }

@@ -7,6 +7,4 @@ import curso.api.rest.model.Telefone;
 
 @Repository
 public interface TelefoneRepository extends CrudRepository<Telefone, Long>{
-	
-	
 }

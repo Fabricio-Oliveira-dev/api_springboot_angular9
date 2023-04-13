@@ -20,22 +20,23 @@ public class ImplementacaoUserDetailsService implements UserDetailsService{
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 	
+	/*Carrega no sistema por nome*/
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		
 		/*Consulta no banco o usuario*/
-		
 		Usuario usuario = usuarioRepository.findUserByLogin(username);
 		
 		if (usuario == null) {
 			throw new UsernameNotFoundException("Usuário não foi encontrado");
-			
 		}
 		
 		return new User(usuario.getLogin(),
 				usuario.getSenha(),
 				usuario.getAuthorities());
 	}
+	
+	/*Insere o nível hierárquico do usuário. E.g. ADMIN, USER*/
 	public void insereAcessoPadrao(Long id) {
 		
 		/*Descobre qual a constraint de restrição*/
@@ -43,10 +44,9 @@ public class ImplementacaoUserDetailsService implements UserDetailsService{
 		
 		if (constraint != null) {
 			/*remove a constraint*/
-			jdbcTemplate.execute(" alter table usuarios_role drop constraint " + constraint);
+			jdbcTemplate.execute(" ALTER TABLE usuarios_role DROP constraint " + constraint);
 		}
 		/*Insere acessos padrões*/
 		usuarioRepository.insereAcessoRolePadrao(id);
 	}
-
 }

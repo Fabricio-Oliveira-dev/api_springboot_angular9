@@ -7,6 +7,4 @@ import curso.api.rest.model.Profissao;
 
 @Repository
 public interface ProfissaoRepository extends JpaRepository<Profissao, Long>{
-
-	
 }

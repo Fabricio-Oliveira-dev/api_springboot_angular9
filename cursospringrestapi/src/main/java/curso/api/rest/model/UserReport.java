@@ -3,6 +3,7 @@ package curso.api.rest.model;
 public class UserReport {
 	
 	private String dataInicio;
+	
 	private String dataFim;
 	
 	public String getDataInicio() {
@@ -17,6 +18,4 @@ public class UserReport {
 	public void setDataFim(String dataFim) {
 		this.dataFim = dataFim;
 	}
-	
-	
 }

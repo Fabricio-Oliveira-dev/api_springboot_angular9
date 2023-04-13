@@ -33,6 +33,4 @@ public class Profissao implements Serializable{
 	public void setDescricao(String descricao) {
 		this.descricao = descricao;
 	}
-	
-	
 }

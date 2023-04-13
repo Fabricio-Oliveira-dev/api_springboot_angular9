@@ -14,7 +14,7 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>war</packaging>
 	<name>cursospringrestapi</name>
-	<description>Curso API REST Spring Boot</description>
+	<description>Cadastro Rest API</description>
 
 	<properties>
 		<java.version>8</java.version>
@@ -32,10 +32,12 @@
 			<artifactId>spring-boot-starter-jdbc</artifactId>
 			<version>2.0.3.RELEASE</version>
 		</dependency>
+		
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-rest</artifactId>
 		</dependency>
+		
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
@@ -46,6 +48,7 @@
 			<artifactId>spring-boot-starter-tomcat</artifactId>
 			<scope>provided</scope>
 		</dependency>
+		
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
@@ -69,7 +72,6 @@
 			<artifactId>spring-security-config</artifactId>
 			<version>5.0.7.RELEASE</version>
 		</dependency>
-
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -101,9 +103,8 @@
 		</dependency>
 	
 		<dependency>
-			<groupId>javax.mail</groupId>
-			<artifactId>javax.mail-api</artifactId>
-			<version>1.6.0</version>
+			<groupId>com.sun.mail</groupId>
+			<artifactId>javax.mail</artifactId>
 		</dependency>
 		
 		<dependency>
@@ -111,12 +112,6 @@
 			<artifactId>jasperreports</artifactId>
 			<version>6.19.0</version>
 		</dependency>
-		
-		<!--<dependency>
-			<groupId>net.sf.jasperreports</groupId>
-			<artifactId>jasperreports-fonts</artifactId>
-			<version>6.12.2</version>
-		</dependency> -->
 
 	</dependencies>
 

@@ -3,7 +3,9 @@ package curso.api.rest.model;
 public class UserChart {
 	
 	private String nome;
+	
 	private String salario;
+	
 	public String getNome() {
 		return nome;
 	}
@@ -16,5 +18,4 @@ public class UserChart {
 	public void setSalario(String salario) {
 		this.salario = salario;
 	}
-	
 }

@@ -27,11 +27,10 @@ public class CursospringrestapiApplication implements WebMvcConfigurer {
 
 	public static void main(String[] args) {
 		SpringApplication.run(CursospringrestapiApplication.class, args);
-		System.out.println(new BCryptPasswordEncoder().encode("123"));
-		/*Teste para o github*/
+		//System.out.println(new BCryptPasswordEncoder().encode("123"));
 	}
 	
-    /*Mapeamento Global que refletem em todo o sistema*/
+    /*Mapeamento Global de CORS que reflete em todo o sistema*/
 	@Override
 	public void addCorsMappings(CorsRegistry registry) {
 		
@@ -46,9 +45,5 @@ public class CursospringrestapiApplication implements WebMvcConfigurer {
 		registry.addMapping("/recuperar/**")
 		.allowedMethods("*")
 		.allowedOrigins("*");
-		/*Liberando o mapeamento de usuario para todas as origens*/
-		
 	}
-
 }
-

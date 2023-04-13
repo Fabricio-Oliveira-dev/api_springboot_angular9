@@ -30,7 +30,7 @@ public class WebConfigSecurity extends WebSecurityConfigurerAdapter{
 		/*Ativando a proteção contra usuário que não estão validados por token*/	
 		http.csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
 		
-		/*Ativando a permissão para acesso a página inicial do sistema Ex: sistema.com.br*/
+		/*Ativando a permissão para acesso a página inicial do sistema*/
 		.disable().authorizeRequests().antMatchers("/").permitAll()
 		.antMatchers("/index", "/recuperar/**").permitAll()
 		.antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
@@ -44,7 +44,7 @@ public class WebConfigSecurity extends WebSecurityConfigurerAdapter{
 		/*Filtra requisições de login para autenticação*/
 		.and().addFilterBefore(new JWTLoginFilter("/login", authenticationManager()), UsernamePasswordAuthenticationFilter.class)
 		
-		/*Filtra demais requisições para verificar a presença do TOKEN JWT no HEADER HTTP*/
+		/*Filtra outras requisições para verificar a presença do TOKEN JWT no HEADER HTTP*/
 		.addFilterBefore(new JwtApiAutenticacaoFilter(), UsernamePasswordAuthenticationFilter.class);
 		
 		}
@@ -58,5 +58,4 @@ public class WebConfigSecurity extends WebSecurityConfigurerAdapter{
 		.passwordEncoder(new BCryptPasswordEncoder());
 		
 		}
-	
 }

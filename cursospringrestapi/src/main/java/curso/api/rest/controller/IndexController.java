@@ -45,11 +45,11 @@ import curso.api.rest.repositoy.UsuarioRepository;
 import curso.api.rest.service.ImplementacaoUserDetailsService;
 import curso.api.rest.service.ServiceRelatorio;
 
-@RestController /* Arquitetura REST */
+@RestController
 @RequestMapping(value = "/usuario")
 public class IndexController {
 	
-	@Autowired /* de fosse CDI seria @Inject*/
+	@Autowired
 	private UsuarioRepository usuarioRepository;
 	
 	@Autowired
@@ -64,36 +64,24 @@ public class IndexController {
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 	
-	
-	/* Serviço RESTful */
+	/* Prepara o relatório com base no id */
 	@GetMapping(value = "/{id}/codigovenda/{venda}", produces = "application/json")
 	public ResponseEntity<Usuario> relatorio(@PathVariable (value = "id") Long id
-			                                , @PathVariable (value = "venda") Long venda) {
+			                                						, @PathVariable (value = "venda") Long venda) {
 		
 		Optional<Usuario> usuario = usuarioRepository.findById(id);
 		
-		/*o retorno seria um relatorio*/
+		/*retorna o relatório*/
 		return new ResponseEntity<Usuario>(usuario.get(), HttpStatus.OK);
 	}
 	
-
-	/* Serviço RESTful */
-	/**@GetMapping(value = "/{id}", produces = "application/json", headers = "X-API-Version=v1")
-	@CachePut("cacheuser")
-	public ResponseEntity<UsuarioDTO> initV1(@PathVariable (value = "id") Long id) {
-		
-		Optional<Usuario> usuario = usuarioRepository.findById(id);
-		System.out.println("Essa é a primeira versão");
-		return new ResponseEntity<UsuarioDTO>(new UsuarioDTO(usuario.get()), HttpStatus.OK);
-	}**/
-	
-	/* Serviço RESTful */
+	/* versão 2 do END-POINT para listar os usuários ao entrar no sistema */
 	@GetMapping(value = "/{id}", produces = "application/json")
 	@CachePut("cacheuser")
 	public ResponseEntity<Usuario> initV2(@PathVariable (value = "id") Long id) {
 		
 		Optional<Usuario> usuario = usuarioRepository.findById(id);
-		System.out.println("Essa é a segunda versão");
+		
 		return new ResponseEntity<Usuario>(usuario.get(), HttpStatus.OK);
 	}
 	
@@ -105,7 +93,6 @@ public class IndexController {
 		return "ok";
 	}
 	
-	
 	@DeleteMapping(value = "/{id}/venda", produces = "application/text")
 	public String deletevenda(@PathVariable("id") Long id){
 		
@@ -114,18 +101,13 @@ public class IndexController {
 		return "ok";
 	}
 	
-	/*vamos supor que o carregamento de usuário seja um processo lento e queremos
-	 * controlar ele com cache para agilizar o processo*/
 	@GetMapping(value = "/", produces = "application/json")
 	@CacheEvict(value="cacheusuarios", allEntries = true)
 	@CachePut("cacheusuarios")
 	public ResponseEntity<Page<Usuario>> usuario () throws InterruptedException{
 		
 		PageRequest page = PageRequest.of(0, 5, Sort.by("nome"));
-		
 		Page<Usuario> list = usuarioRepository.findAll(page);
-		
-		//Thread.sleep(6000);
 		
 		return new ResponseEntity<Page<Usuario>>(list, HttpStatus.OK);
 	}
@@ -136,10 +118,7 @@ public class IndexController {
 	public ResponseEntity<Page<Usuario>> usuarioPagina (@PathVariable("pagina") int pagina) throws InterruptedException{
 		
 		PageRequest page = PageRequest.of(pagina, 5, Sort.by("nome"));
-		
 		Page<Usuario> list = usuarioRepository.findAll(page);
-		
-		//Thread.sleep(6000);
 		
 		return new ResponseEntity<Page<Usuario>>(list, HttpStatus.OK);
 	}
@@ -157,13 +136,11 @@ public class IndexController {
 			
 			pageRequest = PageRequest.of(0, 5, Sort.by("nome"));
 			list = usuarioRepository.findAll(pageRequest);
-		} else {
+		} 
+		else {
 			pageRequest = PageRequest.of(0, 5, Sort.by("nome"));
 			list = usuarioRepository.findUserByNamePage(nome, pageRequest);
 		}
-		
-		//Thread.sleep(6000);
-		
 		return new ResponseEntity<Page<Usuario>>(list, HttpStatus.OK);
 	}
 	
@@ -171,7 +148,8 @@ public class IndexController {
 	@GetMapping(value = "/usuarioPorNome/{nome}/page/{page}", produces = "application/json")
 	@CacheEvict(value="cacheusuarios", allEntries = true)
 	@CachePut("cacheusuarios")
-	public ResponseEntity<Page<Usuario>> usuarioPorNomePage (@PathVariable("nome") String nome, @PathVariable("page") int page) throws InterruptedException{
+	public ResponseEntity<Page<Usuario>> usuarioPorNomePage (@PathVariable("nome") String nome, 
+																									@PathVariable("page") int page) throws InterruptedException{
 		
 		PageRequest pageRequest = null;
 		Page<Usuario> list = null;
@@ -180,17 +158,15 @@ public class IndexController {
 			
 			pageRequest = PageRequest.of(page, 5, Sort.by("nome"));
 			list = usuarioRepository.findAll(pageRequest);
-		} else {
+		} 
+		else {
 			pageRequest = PageRequest.of(page, 5, Sort.by("nome"));
 			list = usuarioRepository.findUserByNamePage(nome, pageRequest);
 		}
-		
-		//Thread.sleep(6000);
-		
 		return new ResponseEntity<Page<Usuario>>(list, HttpStatus.OK);
 	}
 	
-	
+	/*END-POINT para cadastrar um novo usuário*/
 	@PostMapping(value = "/", produces = "application/json")
 	public ResponseEntity<Usuario> cadastrar(@RequestBody Usuario usuario) throws Exception {
 		
@@ -198,7 +174,7 @@ public class IndexController {
 			usuario.getTelefones().get(pos).setUsuario(usuario);
 		}
 		
-		/*Consumindo uma API publica externa*/
+		/*Consumindo uma API de CEP*/
 		if (Objects.nonNull(usuario.getCep())) {
 			URL url = new URL("https://viacep.com.br/ws/"+usuario.getCep()+"/json/");
 			URLConnection connection = url.openConnection();
@@ -212,8 +188,6 @@ public class IndexController {
 				jsonCep.append(cep);
 			}
 			
-			System.out.println(jsonCep.toString());
-			
 			Usuario userAux = new Gson().fromJson(jsonCep.toString(), Usuario.class);
 			
 			usuario.setSenha(userAux.getCep());
@@ -222,25 +196,22 @@ public class IndexController {
 			usuario.setBairro(userAux.getBairro());
 			usuario.setLocalidade(userAux.getLocalidade());
 			usuario.setUf(userAux.getUf());
-			/*Consumindo uma API publica externa*/ 
 		}
 		
+		/*Criptografando a senha*/
 		String senhacriptografa = new BCryptPasswordEncoder().encode(usuario.getSenha());
 		usuario.setSenha(senhacriptografa);
 		Usuario usuarioSalvo = usuarioRepository.save(usuario);
 		
-		
+		/*Insere o nível hierarquico do usuário. e.g. ADMIN, USER*/
 		implementacaoUserDetailsService.insereAcessoPadrao(usuarioSalvo.getId());
 		
 		return new ResponseEntity<Usuario>(usuarioSalvo, HttpStatus.OK);
-		
 	}
 	
-	
+	/*Atualiza o cadastro*/
 	@PutMapping(value = "/", produces = "application/json")
 	public ResponseEntity<Usuario> atualizar(@RequestBody Usuario usuario) {
-		
-		/*outras rotinas antes de atualizar*/
 		
 		for (int pos = 0; pos < usuario.getTelefones().size(); pos ++) {
 			usuario.getTelefones().get(pos).setUsuario(usuario);
@@ -257,34 +228,23 @@ public class IndexController {
 		Usuario usuarioSalvo = usuarioRepository.save(usuario);
 		
 		return new ResponseEntity<Usuario>(usuarioSalvo, HttpStatus.OK);
-		
 	}
-	
-	
 	
 	@PutMapping(value = "/{iduser}/idvenda/{idvenda}", produces = "application/json")
 	public ResponseEntity updateVenda(@PathVariable Long iduser, 
-			                                     @PathVariable Long idvenda) {
-		/*outras rotinas antes de atualizar*/
-		
-		//Usuario usuarioSalvo = usuarioRepository.save(usuario);
-		
+			                                     			@PathVariable Long idvenda) {
+
 		return new ResponseEntity("Venda atualzada", HttpStatus.OK);
-		
 	}
-	
 	
 	@PostMapping(value = "/{iduser}/idvenda/{idvenda}", produces = "application/json")
 	public ResponseEntity cadastrarvenda(@PathVariable Long iduser, 
-			                                     @PathVariable Long idvenda) {
-		
-		/*Aqui seria o processo de venda*/
-		//Usuario usuarioSalvo = usuarioRepository.save(usuario);
+			                                     				@PathVariable Long idvenda) {
 		
 		return new ResponseEntity("id user :" + iduser + " idvenda :"+ idvenda, HttpStatus.OK);
-		
 	}
 	
+	/*deleta um telefone associado ao usuário*/
 	@DeleteMapping(value = "/removerTelefone/{id}", produces = "application/text")
 	public String deleteTelefone(@PathVariable("id") Long id) {
 		
@@ -293,6 +253,7 @@ public class IndexController {
 		return "ok";
 	}
 	
+	/*END-POINT para download do relatório*/
 	@GetMapping(value = "/relatorio", produces = "application/text")
 	public ResponseEntity<String> downloadRelatorio(HttpServletRequest request) throws Exception {
 		
@@ -303,6 +264,7 @@ public class IndexController {
 		return new ResponseEntity<String>(base64Pdf, HttpStatus.OK);
 	}
 	
+	/*END-POINT para download do relatório com base nos parâmetros de data*/
 	@PostMapping(value = "/relatorio/", produces = "application/text")
 	public ResponseEntity<String> downloadRelatorioParam(HttpServletRequest request,
 			@RequestBody UserReport userReport) throws Exception {
@@ -324,15 +286,16 @@ public class IndexController {
 		return new ResponseEntity<String>(base64Pdf, HttpStatus.OK);
 	}
 	
+	/*END-POINT para a criação do gráfico*/
 	@GetMapping(value = "/grafico", produces = "application/json")
 	public ResponseEntity<UserChart> grafico() {
 		
 		UserChart userChart = new UserChart();
 		
 		List<String> resultado = jdbcTemplate.queryForList(
-				"select array_agg(nome) from usuario where salario > 0 and nome <> ''"
-				+ " union all "
-				+ " select cast(array_agg(salario) as character varying[]) from usuario where salario > 0 and nome <> ''", String.class);
+				"SELECT array_agg(nome) FROM usuario WHERE salario > 0 AND nome <> ''"
+				+ " UNION ALL "
+				+ " SELECT CAST(array_agg(salario) AS character varying[]) FROM usuario WHERE salario > 0 AND nome <> ''", String.class);
 		
 		if (!resultado.isEmpty()) {
 			String nomes = resultado.get(0).replaceAll("\\{", "").replaceAll("\\}", "");
@@ -341,11 +304,6 @@ public class IndexController {
 			userChart.setNome(nomes);
 			userChart.setSalario(salario);
 		}
-		
 		return new ResponseEntity<UserChart>(userChart, HttpStatus.OK);
-		
 	}
-	
-	
-
 }

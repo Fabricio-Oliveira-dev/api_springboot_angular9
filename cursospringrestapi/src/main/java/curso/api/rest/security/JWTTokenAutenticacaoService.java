@@ -22,10 +22,10 @@ import io.jsonwebtoken.SignatureAlgorithm;
 @Component
 public class JWTTokenAutenticacaoService {
 	
-	/*Tempo de validade do Token 2 dias*/
+	/*Tempo de validade do Token para 2 dias*/
 	private static final long EXPIRATION_TIME = 172800000;
 	
-	/*Uma senha única para compor a autenticacao e ajudar na segurança*/
+	/*Uma única senha para compor a autenticação e ajudar na segurança*/
 	private static final String SECRET = "SenhaExtremamenteSecreta";
 	
 	/*Prefixo padrão de Token*/
@@ -48,15 +48,15 @@ public class JWTTokenAutenticacaoService {
 		/*Adiciona no cabeçalho http*/
 		response.addHeader(HEADER_STRING, token);
 		
-		if (response.getHeader("Access-Control-Allow-Origin") == null) {
 		/*Liberando resposta para porta diferente do projeto Angular*/
-		response.addHeader("Access-Control-Allow-Origin", "*");
+		if (response.getHeader("Access-Control-Allow-Origin") == null) {
+			response.addHeader("Access-Control-Allow-Origin", "*");
 		}
 		
 		ApplicationContextLoad.getApplicationContext().getBean(UsuarioRepository.class)
 				.atualizaTokenUser(JWT, username);
 		
-		/*liberando resposta para portas diferentes que usam a API ou caso clientes web*/
+		/*liberando resposta para portas diferentes que usam a API*/
 		liberacaoCors(response);
 		
 		/*Escreve token como resposta no corpo http*/
@@ -67,33 +67,29 @@ public class JWTTokenAutenticacaoService {
 	public Authentication getAuthentication(HttpServletRequest request, HttpServletResponse response) {
 
 		try {
-		/* Pega o token enviado no cabeçalho http */
-		String token = request.getHeader(HEADER_STRING);
-
-		if (token != null) {
-			
-			String tokenLimpo = token.replace(TOKEN_PREFIX, "").trim();
-
-			/* Faz a validação do token do usuário na requisição */
-			String user = Jwts.parser().setSigningKey(SECRET).parseClaimsJws(tokenLimpo).getBody()
-					.getSubject(); /* Ex: João Silva */
-
-			if (user != null) {
-
-				Usuario usuario = ApplicationContextLoad.getApplicationContext().getBean(UsuarioRepository.class)
-						.findUserByLogin(user);
-
-				/* Retorna o usuário logado */
-				if (usuario != null) {
-						
-					if (tokenLimpo.equalsIgnoreCase(usuario.getToken())) {
-						
-						return new UsernamePasswordAuthenticationToken(usuario.getLogin(), usuario.getSenha(), usuario.getAuthorities());
+			/* Pega o token enviado no cabeçalho http */
+			String token = request.getHeader(HEADER_STRING);
+	
+			if (token != null) {
+				String tokenLimpo = token.replace(TOKEN_PREFIX, "").trim();
+	
+				/* Faz a validação do token do usuário na requisição */
+				String user = Jwts.parser().setSigningKey(SECRET).parseClaimsJws(tokenLimpo).getBody()
+						.getSubject(); /* Ex: João Silva */
+	
+				if (user != null) {
+					Usuario usuario = ApplicationContextLoad.getApplicationContext().getBean(UsuarioRepository.class)
+							.findUserByLogin(user);
+	
+					/* Retorna o usuário logado */
+					if (usuario != null) {
+						if (tokenLimpo.equalsIgnoreCase(usuario.getToken())) {
+							
+							return new UsernamePasswordAuthenticationToken(usuario.getLogin(), usuario.getSenha(), usuario.getAuthorities());
+						}
 					}
 				}
-			}
-			
-		} /*fim da condição token*/
+			} /*fim da condição token*/
 		}catch(io.jsonwebtoken.ExpiredJwtException e) {
 			try {
 				response.getOutputStream().println("Seu TOKEN está expirado, faça o login ou informe um novo TOKEN para autenticação");
@@ -104,6 +100,7 @@ public class JWTTokenAutenticacaoService {
 		return null;
 	}
 	
+	/*Liberação de CORS*/
 	private void liberacaoCors(HttpServletResponse response) {
 
 		if (response.getHeader("Access-Control-Allow-Origin") == null) {
@@ -122,5 +119,4 @@ public class JWTTokenAutenticacaoService {
 			response.addHeader("Access-Control-Allow-Methods", "*");
 		}
 	}
-	
 }

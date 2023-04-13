@@ -28,6 +28,7 @@ public class RecuperaController {
 	@Autowired
 	private ServiceEnviaEmail serviceEnviaEmail;
 	
+	/*END-POINT que envia uma senha temporária no e-mail para recuperação de acesso*/
 	@ResponseBody
 	@PostMapping(value = "/")
 	public ResponseEntity<ObjetoError> recuperar (@RequestBody Usuario login) throws Exception {
@@ -40,8 +41,8 @@ public class RecuperaController {
 			objetoError.setCode("404"); /*Não encontrado*/
 			objetoError.setError("Usuário não encontrado");
 		} else {
-			/*Rotina de envio de e-mail*/
 			
+			/*Criando e criptografando a senha temporária*/
 			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 			String senhaNova = dateFormat.format(Calendar.getInstance().getTime());
 			String senhaCriptografada = new BCryptPasswordEncoder().encode(senhaNova);

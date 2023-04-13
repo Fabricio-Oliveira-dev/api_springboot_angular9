@@ -21,7 +21,7 @@ import curso.api.rest.model.Usuario;
 /*Estabelece o nosso gerenciador de Token*/
 public class JWTLoginFilter extends AbstractAuthenticationProcessingFilter{
 
-	/*Configurando o gerenciador de autenticacao*/
+	/*Configurando o gerenciador de autenticação*/
 	protected JWTLoginFilter(String url, AuthenticationManager authenticationManager) {
 		
 		/*Obriga a autenticar a URL*/
@@ -29,7 +29,6 @@ public class JWTLoginFilter extends AbstractAuthenticationProcessingFilter{
 		
 		/*Gerenciador de autenticacao*/
 		setAuthenticationManager(authenticationManager);
-		
 	}
 	
 	/*Retorna o usuário ao processar a autenticação*/
@@ -37,7 +36,7 @@ public class JWTLoginFilter extends AbstractAuthenticationProcessingFilter{
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
 			throws AuthenticationException, IOException, ServletException {
 		
-		/*Está pegando o token para validar*/
+		/* Pega o token para validar*/
 		Usuario user = new ObjectMapper().readValue(request.getInputStream(), Usuario.class);
 		
 		/*Retorna o usuário login, senha e acessos*/
@@ -50,5 +49,4 @@ public class JWTLoginFilter extends AbstractAuthenticationProcessingFilter{
 		
 		new JWTTokenAutenticacaoService().addAuthentication(response, authResult.getName());
 	}
-
 }

@@ -17,28 +17,34 @@ import curso.api.rest.model.Usuario;
 @Repository
 public interface UsuarioRepository  extends JpaRepository<Usuario, Long>{
 	
-	@Query("select u from Usuario u where u.login = ?1")
+	/*Query para achar o usuário com base no login*/
+	@Query("SELECT u FROM Usuario u WHERE u.login = ?1")
 	Usuario findUserByLogin(String login);
 	
+	/*Query que atualiza o token*/
 	@Transactional
 	@Modifying
-	@Query(nativeQuery = true, value = "update usuario set token = ?1 where login = ?2")
+	@Query(nativeQuery = true, value = "UPDATE usuario SET token = ?1 where login = ?2")
 	void atualizaTokenUser(String token, String login);
 	
-	@Query("select u from Usuario u where u.nome like %?1%")
+	/*Query para listar o usuário com base no nome*/
+	@Query("SELECT u FROM Usuario u WHERE u.nome LIKE %?1%")
 	List<Usuario> findUserByNome(String nome);
 	
-	@Query(value="SELECT constraint_name from information_schema.constraint_column_usage  where table_name = 'usuarios_role' and column_name = 'role_id' and constraint_name <> 'unique_role_user';", nativeQuery = true)
+	/*Query que consulta o nível hierárquico do usuário. e.g. ADMIN, USER*/
+	@Query(value="SELECT constraint_name FROM information_schema.constraint_column_usage  WHERE table_name = 'usuarios_role' AND column_name = 'role_id' AND constraint_name <> 'unique_role_user';", nativeQuery = true)
 	String consultaConstraintRole();
 	
+	/*Query adiciona o nível hierárquico padrão para o usuário*/
 	@Transactional
 	@Modifying
-	@Query(nativeQuery = true, value = "insert into usuarios_role (usuario_id, role_id) values(?1, (select id from role where nome_role = 'ROLE_USER')); ")
+	@Query(nativeQuery = true, value = "INSERT INTO usuarios_role (usuario_id, role_id) values(?1, (SELECT id FROM role WHERE nome_role = 'ROLE_USER')); ")
 	void insereAcessoRolePadrao(Long idUser);
 	
+	/*Query que atualiza a senha*/
 	@Transactional
 	@Modifying
-	@Query(value = "update usuario set senha = ?1 where id = ?2", nativeQuery = true)
+	@Query(value = "UPDATE usuario SET senha = ?1 WHERE id = ?2", nativeQuery = true)
 	void updateSenha(String senha, Long codUser);
 	
 	default Page<Usuario> findUserByNamePage(String nome, PageRequest pageRequest) {
